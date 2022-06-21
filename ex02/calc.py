@@ -12,7 +12,6 @@ def button_click(event):
     #tkm.showinfo("",f"{i}のボタンがクリックされました")
         entry.insert(tk.END,num)
 
-
     if num == "?":
         eqn = entry.get()
         res = eval(eqn)
