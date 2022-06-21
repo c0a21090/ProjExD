@@ -12,39 +12,39 @@ def button_click(event):
     #tkm.showinfo("",f"{i}のボタンがクリックされました")
         entry.insert(tk.END,num)
 
-    if num == "?":
-        eqn = entry.get()
+    if num == "?":       #?ボタンを押したら(ちなみにこのボタンは未完成)
+        eqn = entry.get()   
         res = eval(eqn)
         entry.delete(0,tk.END)
-        ans = input("答えは何?")
+        ans = input("答えは何?")   #答えを入力する
         entry.insert(tk.END,ans)
-        if ans == res:
-            entry.insert(tk.END,"正解")
+        if ans == res:         #入力した値と答えを比べる
+            entry.insert(tk.END,"正解")   #等しければ正解と表示
         else:
-            entry.insert(tk.END,"不正解")
-    if num == "**":
-        eqn = entry.get()
+            entry.insert(tk.END,"不正解")  #違えば不正解と表示
+    if num == "**":          #**ボタンを押したら
+        eqn = entry.get()   #計算が取得され、累乗される
         res = eval(eqn)
         entry.delete(0,tk.END)
         entry.insert(tk.END,res)
 
-    if num == "c":
+    if num == "c":          #cボタンを押すと表示されている値が削除される
         entry.delete(0,tk.END)
 
-    if num == "×":
-        eqn = entry.get()
+    if num == "×":    #×ボタンを押したら
+        eqn = entry.get()    #式が取得され、掛け算がされる
         res = eval(eqn)
         entry.delete(0,tk.END)
         entry.insert(tk.END,res)
 
-    if num == "/":
-        eqn = entry.get()
+    if num == "/":     #/ボタンを押したら
+        eqn = entry.get()      #式が取得され、割り算がされる
         res = eval(eqn)
         entry.delete(0,tk.END)
         entry.insert(tk.END,res)
 
-    if num == "押すな":
-        entry.delete(0,tk.END)
+    if num == "押すな":     #押すなボタンを押したら
+        entry.delete(0,tk.END)    #値が削除され、ばーかと表示される
         entry.insert(tk.END,"ばーか")
 
 if __name__ == "__main__":
