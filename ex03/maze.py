@@ -32,6 +32,7 @@ def main_proc():
 
     cx,cy=mx*100+50,my*100+50
     canvas.coords("tori",cx,cy)
+    canvas.coords("mass",cx-50,cy-50,cx+50,cy+50)
     root.after(100,main_proc)
 
 if __name__ == "__main__":
@@ -39,10 +40,11 @@ if __name__ == "__main__":
     root.title("迷えるこうかとん")
 
     canvas = tk.Canvas(root,width=1500,height=900,bg="black")
-    a = tk.Canvas(root,width=100,height=100,bg="blue")
+    #a = tk.Canvas(root,width=100,height=100,bg="blue")
     canvas.pack()
     maze_bg = mm.make_maze(15,9)
     mm.show_maze(canvas,maze_bg)
+    canvas.create_rectangle(100,100, 200, 200, fill = 'blue', tag="mass")
     tori = tk.PhotoImage(file="fig/9.png")
     mx,my=1,1
     cx,cy=mx*100+50,my*100+50
