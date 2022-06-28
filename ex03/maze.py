@@ -21,7 +21,7 @@ def main_proc():
     }
     try:
         if maze_bg[my+delta[key][1]][mx+delta[key][0]] == 0:
-            my,mx = my+delta[key][1],mx+delta[key][0]
+            my,mx = my+delta[key][1],mx+delta[key][0] 
             a = my+delta[key][1],mx+delta[key][0]
         else:
             if key!="":     #壁に衝突したら
