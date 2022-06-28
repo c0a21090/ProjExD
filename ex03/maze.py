@@ -1,5 +1,6 @@
 import tkinter as tk
 import maze_maker as mm
+import tkinter.messagebox as tkm
 
 def key_down(event):
     global key
@@ -10,7 +11,7 @@ def key_up(event):
     key = ""
 
 def main_proc():
-    global cx,cy,mx,my
+    global cx,cy,mx,my, key
     delta = {
         ""      :[0, 0],
         "Up"    :[0,-1],
@@ -21,11 +22,14 @@ def main_proc():
     try:
         if maze_bg[my+delta[key][1]][mx+delta[key][0]] == 0:
             my,mx = my+delta[key][1],mx+delta[key][0]
+            a = my+delta[key][1],mx+delta[key][0]
+        else:
+            if key!="":     #壁に衝突したら
+                tkm.showinfo("危険","壁に衝突しました")  #表示する
+                key=""    #keyを更新する(何も押してないこととする)
     except:
         pass
 
-
-    # cx ,cy = cx+delta[key][0],cy+delta[key][1]
     cx,cy=mx*100+50,my*100+50
     canvas.coords("tori",cx,cy)
     root.after(100,main_proc)
@@ -35,6 +39,7 @@ if __name__ == "__main__":
     root.title("迷えるこうかとん")
 
     canvas = tk.Canvas(root,width=1500,height=900,bg="black")
+    a = tk.Canvas(root,width=100,height=100,bg="blue")
     canvas.pack()
     maze_bg = mm.make_maze(15,9)
     mm.show_maze(canvas,maze_bg)
