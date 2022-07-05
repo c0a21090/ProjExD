@@ -4,7 +4,7 @@ import random
 
 
 def main():
-    i = 10
+    i = 10      #爆弾の半径iを10とおく
     clock = pg.time.Clock()
     pg.display.set_caption("逃げろ！こうかとん")
     screen_sfc = pg.display.set_mode((1600,900))
@@ -20,7 +20,7 @@ def main():
 
     bmimg_sfc = pg.Surface((20,20))
     bmimg_sfc.set_colorkey((0,0,0))
-    pg.draw.circle(bmimg_sfc,(255,0,0),(10,10),i)
+    pg.draw.circle(bmimg_sfc,(255,0,0),(10,10),i)    #爆弾の半径をiとおく
     bmimg_rct = bmimg_sfc.get_rect()
     bmimg_rct.centerx = random.randint(0,screen_rct.width)
     bmimg_rct.centery = random.randint(0,screen_rct.height)
@@ -37,11 +37,11 @@ def main():
             if event.type == pg.QUIT: return 
 
         for event in pg.event.get():
-            if event.type == pg.K_F1: i += 5
+            if event.type == pg.K_F1: i += 5    #F1キーを押すたびに半径iを5増やす
 
         #練習4
         key_states = pg.key.get_pressed() #辞書
-        if key_states[pg.K_F1] == True:
+        if key_states[pg.K_F1] == True:      #F1キーを押すたびに半径iを5増やす
             i += 5
             bmimg_sfc = pg.Surface((20,20))
             bmimg_sfc.set_colorkey((0,0,0))
@@ -81,8 +81,8 @@ def check_bound(rct,scr_rct):
     [2] scr_rct: スクリーンのRect
     '''
     yoko, tate = +1, +1 #領域内
-    if rct.left < scr_rct.left or scr_rct.right < rct.right: yoko = -1.15 #領域外
-    if rct.top < scr_rct.top or scr_rct.bottom < rct.bottom: tate = -1.15 #領域外
+    if rct.left < scr_rct.left or scr_rct.right < rct.right: yoko = -1.15 #領域外　　　　　領域外に行こうとすると反転と同時に速度が速くなる
+    if rct.top < scr_rct.top or scr_rct.bottom < rct.bottom: tate = -1.15 #領域外         1から1.15と変えた
     return yoko, tate
 
 if __name__ == "__main__":
