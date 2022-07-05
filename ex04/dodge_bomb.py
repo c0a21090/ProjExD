@@ -36,7 +36,7 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT: return 
 
-        for event in pg.event.get():
+        for event in pg.event.get():         #イベントをボタンを押すことで発生させる
             if event.type == pg.K_F1: i += 5    #F1キーを押すたびに半径iを5増やす
 
         #練習4
@@ -81,8 +81,14 @@ def check_bound(rct,scr_rct):
     [2] scr_rct: スクリーンのRect
     '''
     yoko, tate = +1, +1 #領域内
-    if rct.left < scr_rct.left or scr_rct.right < rct.right: yoko = -1.15 #領域外　　　　　領域外に行こうとすると反転と同時に速度が速くなる
-    if rct.top < scr_rct.top or scr_rct.bottom < rct.bottom: tate = -1.15 #領域外         1から1.15と変えた
+    if rct.left < scr_rct.left or scr_rct.right < rct.right:
+        yoko = -1.15 #領域外　　　　　領域外に行こうとすると反転と同時に速度が速くなる
+        if vx >= 5:     #爆弾のスピードが一定に達したら反転した時のスピード変化を-1に戻す(エラーが出る＝出来なかった)
+            yoko = -1
+    if rct.top < scr_rct.top or scr_rct.bottom < rct.bottom: 
+        tate = -1.15 #領域外         速度を領域外に行こうとするたびに1から1.15と変わる
+        if vy >= 5:          #爆弾のスピードが一定に達したら反転した時のスピード変化を-1に戻す(エラーが出る＝出来なかった)
+            tate -= 1
     return yoko, tate
 
 if __name__ == "__main__":
