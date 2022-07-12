@@ -93,7 +93,7 @@ class Shot():
 
 def main():
     clock = pg.time.Clock()
-    scr = Screen("負けるな！こうかとん", (1600, 900), "fig/pg_bg.jpg")
+    scr = Screen("負けるな！こうかとん", (1600, 900), "fig/pg_bg.jpg") # 修正19
     kkt = Bird("fig/6.png", 2.0, (900, 400))
     bkb = [Bomb((255,0,0), 10, (+1,+1), scr)]
 
