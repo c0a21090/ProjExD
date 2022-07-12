@@ -73,6 +73,7 @@ class Bomb:
         # 練習5
         self.blit(scr) 
 
+
 class Shot():
     def __init__(self,chr: Bird):
         self.sfc = pg.image.load("fig/beam.png")
@@ -92,18 +93,23 @@ class Shot():
 
 def main():
     clock = pg.time.Clock()
-    scr = Screen("逃げろ！こうかとん", (1600, 900), "fig/pg_bg.jpg")
+    scr = Screen("負けるな！こうかとん", (1600, 900), "fig/pg_bg.jpg")
     kkt = Bird("fig/6.png", 2.0, (900, 400))
     bkb = [Bomb((255,0,0), 10, (+1,+1), scr)]
 
-    count = 0            #countを0とする
+    count1 = 0
+    count2 = 0            #countを0とする
     beams = []           #beamの空リストを作る
     while True:
         scr.blit()
-        count +=1             #while文の中でcountを+1する
-        if count == 1000:     #countが1000になったら
+        count1 +=1             #while文の中でcountを+1する
+        count2 +=1
+        if count1 == 1000:     #countが1000になったら
             bkb.append(Bomb((255,0,0), 10, (+1,+1), scr))    #爆弾を増やす
-            count = 0         #countを0に戻す
+            count1 = 0         #countを0に戻す
+        if count2 == 1000:     #countが1000になったら
+            bkb.append(Bomb((255,0,0), 10, (+1,+1), scr))    #爆弾を増やす
+            count2 = 0         #countを0に戻す
         # 練習2
         for event in pg.event.get():
             if event.type == pg.QUIT: return
