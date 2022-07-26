@@ -1,268 +1,168 @@
-import sys
-import time
 import random
-import pygame
-from pygame.locals import *
- 
-### 定数
-SURFACE  = Rect(0, 0, 400, 640) # 画面サイズ(X軸,Y軸,横,縦)
-R_H_SIZE = 10                   # ラケット縦サイズ
-R_W_SIZE = 100                  # ラケット横サイズ
-R_B_POS  = 30                   # ラケット縦位置
-B_SIZE   = 20                   # ボールサイズ
-F_RATE   = 60                   # フレームレート
-K_REPEAT = 30                   # キーリピート発生間隔
-R_SPEED  = 10                   # ラケット移動速度
-B_SPEED  = 10                   # ボール移動速度
-F_SIZE   = 60                   # フォントサイズ
-S_TIME   = 2                    # START画面時間
-time_sta = 0
-time_end = 0
-B_H_SIZE = 15       # ブロック縦サイズ
-B_W_SIZE = 35       # ブロック横サイズ
-B_TOP    = 50       # ブロック上余白位置
-B_LEFT   = 10       # ブロック左余白位置
-B_BLANK  = 3        # ブロック間余白
- 
-############################
-### ラケットクラス
-############################
-class Racket(pygame.sprite.Sprite):
- 
-    ############################
-    ### 初期化メソッド
-    ############################
-    def __init__(self, name):
-        pygame.sprite.Sprite.__init__(self)
- 
-        ### ファイル読み込み
-        self.image = pygame.image.load(name).convert()
- 
-        ### 画像サイズ変更
-        self.image = pygame.transform.scale(self.image, (R_W_SIZE, R_H_SIZE))
- 
-        ### ラケットオブジェクト生成
-        self.rect = self.image.get_rect()
- 
-    ############################
-    ### ラケット更新
-    ############################
-    def update(self, racket_pos):
- 
-        ### ラケット位置
-        self.rect.centerx = racket_pos
-        self.rect.centery = SURFACE.bottom - R_B_POS
- 
-        ### 画面内に収める
-        self.rect.clamp_ip(SURFACE)
- 
-    ############################
-    ### ラケット描画
-    ############################
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
-
-###ブロッククラス
-class Block(pygame.sprite.Sprite):
- 
-    ############################
-    ### 初期化メソッド
-    ############################
-    def __init__(self, name, x, y):
-        pygame.sprite.Sprite.__init__(self)
- 
-        ### ファイル読み込み
-        self.image = pygame.image.load(name).convert()
- 
-        ### 画像サイズ変更
-        self.image = pygame.transform.scale(self.image, (B_W_SIZE, B_H_SIZE))
- 
-        ### ブロックオブジェクト生成
-        self.rect = self.image.get_rect()
- 
-        ### ブロック位置設定
-        self.rect.left = x * (self.rect.width  + B_BLANK) + B_LEFT
-        self.rect.top  = y * (self.rect.height + B_BLANK) + B_TOP
- 
-    ############################
-    ### ブロック描画
-    ############################
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
- 
+import sys
+import pygame as pg
 
 
-############################
-### ボールクラス
-############################
-class Ball(pygame.sprite.Sprite):
- 
-    ############################
-    ### 初期化メソッド
-    ############################
-    def __init__(self, name, racket):
-        pygame.sprite.Sprite.__init__(self)
- 
-        ### ファイル読み込み
-        self.image = pygame.image.load(name).convert_alpha()
- 
-        ### 画像サイズ変更
-        self.image = pygame.transform.scale(self.image, (B_SIZE, B_SIZE))
- 
-        ### ボールオブジェクト生成
-        self.rect = self.image.get_rect()
- 
-        self.sp_x = 0               # ボール速度(X軸)
-        self.sp_y = 0               # ボール速度(Y軸)
-        self.racket = racket        # ラケットを参照
-        self.update = self.setup    # ゲーム初期状態
- 
-    ############################
-    ### ゲーム初期状態
-    ############################
-    def setup(self, surface):
- 
-        ### ボールの初期位置
-        self.sp_x = B_SPEED / 2
-        self.sp_y = B_SPEED
-        self.update = self.move
- 
-    ############################
-    ### ボールの挙動
-    ############################
-    def move(self, surface):
-        self.rect.centerx += int(self.sp_x)
-        self.rect.centery += int(self.sp_y)
- 
-        ### 左壁の反射
-        if self.rect.left  < SURFACE.left:
-            self.rect.left  = SURFACE.left
-            self.sp_x = -self.sp_x
-        ### 右壁の反射
-        if self.rect.right > SURFACE.right:
-            self.rect.right = SURFACE.right
-            self.sp_x = -self.sp_x
-        ### 上壁の反射
-        if self.rect.top   < SURFACE.top:
-            self.rect.top   = SURFACE.top
-            self.sp_y = -self.sp_y
- 
-        ### ラケットとボールの接触判定
-        if self.rect.colliderect(self.racket.rect):
- 
-            ### 接触位置取得
-            dist = self.rect.centerx - self.racket.rect.centerx
- 
-            ### X軸移動距離設定
-            if   dist < 0:
-                self.sp_x = -B_SPEED * (1 + dist / R_W_SIZE/2)
-            elif dist > 0:
-                self.sp_x =  B_SPEED * (1 - dist / R_W_SIZE/2)
+class Screen:
+    def __init__(self, title, wh, image):  #初期メソッド
+        pg.display.set_caption(title)
+        self.sfc = pg.display.set_mode(wh)     # Surface
+        self.rct = self.sfc.get_rect()         # Rect
+        self.bgi_sfc = pg.image.load(image)    # Surface
+        self.bgi_rct = self.bgi_sfc.get_rect() # Rect
+
+    def blit(self):
+        self.sfc.blit(self.bgi_sfc, self.bgi_rct)
+
+    def text_blit(self,text,t_x,t_y):
+        self.sfc.blit(text,[t_x,t_y])
+
+class Mato:#的のクラス
+    def __init__(self,image,size,xy):
+        self.sfc = pg.image.load(image)    # Surface
+        self.sfc = pg.transform.rotozoom(self.sfc, 0, size)  # Surface
+        self.rct = self.sfc.get_rect()          # Rect
+        self.rct.center = xy
+
+    def blit(self, scr: Screen):#貼り付け
+        scr.sfc.blit(self.sfc, self.rct)
+
+    def update(self,scr:Screen): #更新
+        scr.sfc.blit(self.sfc,self.rct)
+
+
+class Racket:
+    def __init__(self, image: str, size: float, xy):
+        self.sfc = pg.image.load(image)    # Surface
+        self.sfc = pg.transform.rotozoom(self.sfc, 0, size*15)  # Surface
+        self.rct = self.sfc.get_rect()          # Rect
+        self.rct.center = xy
+
+    def blit(self, scr: Screen):
+        scr.sfc.blit(self.sfc, self.rct)
+
+    def update(self, scr: Screen):
+        key_states = pg.key.get_pressed()
+        if key_states[pg.K_LEFT]: 
+            self.rct.centerx -= 5
+        if key_states[pg.K_RIGHT]: 
+            self.rct.centerx += 5
+        
+        if check_bound(self.rct, scr.rct) != (1, 1): # 領域外だったら
+            if key_states[pg.K_LEFT]: 
+                self.rct.centerx += 5
+            if key_states[pg.K_RIGHT]: 
+                self.rct.centerx -= 5
+        self.blit(scr)
+
+
+
+class Ball:
+    def __init__(self, fname, rack,mato,mato2):
+
+
+        self.image = pg.image.load(fname).convert_alpha()
+        self.image = pg.transform.scale(self.image,(50,50))
+        self.rct = self.image.get_rect()
+        self.v_x = 2
+        self.v_y = 2
+        self.racket = rack
+        self.mato = mato
+        self.mato2 = mato2
+
+
+    def ball_move(self, scr: Screen):
+        global score
+
+        self.rct.centerx += int(self.v_x)
+        self.rct.centery += int(self.v_y)
+
+        if self.rct.left < scr.rct.left:
+            self.rct.left = scr.rct.left
+            self.v_x = -self.v_x
+        if self.rct.right > scr.rct.right:
+            self.rct.right = scr.rct.right
+            self.v_x = -self.v_x
+        if self.rct.top < scr.rct.top:
+            self.rct.top = scr.rct.top
+            self.v_y = -self.v_y
+
+        if self.rct.colliderect(self.racket.rct): #ボールとバーの衝突
+            dist = self.rct.centerx - self.racket.rct.centerx
+            if dist < -1:
+                self.v_x =-2 #-2*(2+dist/200/2)
+            elif dist > 1:
+                self.v_x = 2 #2*(2-dist/200/2)
             else:
-                self.sp_x = random.randint(-5, 5)
- 
-         ### Y軸移動
-            self.sp_y = -B_SPEED
- 
-        ### ボールを落とした場合
-        if self.rect.bottom > SURFACE.bottom:
- 
-            ### GAME OVERを表示
-            font = pygame.font.Font(None, F_SIZE)
-            text = font.render("GAME OVER", True, (255,31,31))
-            surface.blit(text, [73,299])
-            time_end = time.time()
-            process_time = time_end - time_sta
-            font1 = pygame.font.Font(None,F_SIZE)
-            text1 = font1.render(process_time,True,(255,31,31))
-            surface.blit(text1,[73,299])
- 
-    ############################
-    ### ボール描画
-    ############################
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
- 
-############################
-### メイン関数 
-############################
-def main():
- 
-    ### 画面初期化
-    pygame.init()
-    surface = pygame.display.set_mode(SURFACE.size)
- 
-    ### スプライトを作成
-    racket = Racket("fig/0.png")
-    ball   = Ball("fig/1.png", racket)
- 
-    ### 時間オブジェクト生成
-    clock = pygame.time.Clock()
- 
-    ### ラケット初期位置
-    racket_pos = int(SURFACE.width / 2)
- 
-    ### キーリピート有効
-    pygame.key.set_repeat(K_REPEAT)
- 
-    ### STARTを表示
-    font = pygame.font.Font(None, F_SIZE)
-    text = font.render("START", True, (127,127,255))
-    surface.fill((0,0,0))
-    surface.blit(text, [133,299])
-    pygame.display.update()
-    time_sta = time.time()
- 
-    ### 一時停止
-    time.sleep(S_TIME)
- 
-    ### 無限ループ
+                self.v_x = random.randint(-5,5)
+            self.v_y = -self.v_y
+
+        if self.rct.colliderect(self.mato.rct):#的1の判定
+            self.v_x *= -1#-1をかけて反転する
+            self.v_y *= -1#-1をかけて反転する
+            self.v_x+= 0.2#動きを加速させる
+            self.v_y+= 0.2#動きを加速させる
+            score += 100
+
+        if self.rct.colliderect(self.mato2.rct):#的2の判定
+            self.v_x *= -1#-1をかけて反転する
+            self.v_y *= -1#-1をかけて反転する
+            self.v_x+= 1#動きを加速させる
+            self.v_y+= 1#動きを加速させる
+            score += 500    
+
+        if self.rct.bottom > scr.rct.bottom: #ボールが画面の下に行った場合
+            font = pg.font.Font(None, 100)
+            text = font.render("GAME OVER", True,(255,0,0))
+            scr.text_blit(text, 400,200)
+
+
+    def draw(self, sfc): #ボールの描画
+        sfc.blit(self.image, self.rct)
+
+
+    def update(self,scr:Screen): #更新
+        scr.sfc.blit(self.image,self.rct)
+
+def main(): #メイン関数
+    clock = pg.time.Clock()
+
+    scr = Screen("squash", (1100, 600), "fig/haikei.png")
+    rack = Racket("fig/bou3.png",0.08,(550,550))
+    mato =  Mato("fig/mato1.png",0.5,(random.randint(220,550),110))
+    mato2 = Mato("fig/mato1.png",0.3,(random.randint(600,900),120))
+    ball = Ball("fig/0.png", rack,mato,mato2)
+
     while True:
- 
-        ### フレームレート設定
-        clock.tick(F_RATE)
- 
-        ### 背景色設定
-        surface.fill((0,0,0))
- 
-        ### スプライトを更新
-        racket.update(racket_pos)
-        ball.update(surface)
- 
-        ### スプライトを描画
-        racket.draw(surface)
-        ball.draw(surface)
- 
-        ### 画面更新
-        pygame.display.update()
- 
-        ### イベント処理
-        for event in pygame.event.get():
- 
-            ### 終了処理
-            if event.type == QUIT:
-                exit()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    exit()
- 
-                ### キー操作
-                if event.key == K_LEFT:
-                    racket_pos -= R_SPEED
-                if event.key == K_RIGHT:
-                    racket_pos += R_SPEED
- 
-############################
-### 終了関数
-############################
-def exit():
-    pygame.quit()
-    sys.exit()
- 
-############################
-### メイン関数呼び出し
-############################
-if __name__ == "__main__":
- 
-    ### 処理開始
+        scr.blit()
+        mato.blit(scr)
+        mato2.blit(scr)
+        font = pg.font.SysFont(None,60)
+        message = font.render("score",False,(255,255,0))#scoreという文字を作成
+        scr.text_blit(message, 900,50)
+        font = pg.font.Font(None, 80)
+        text = font.render(f"{score}", True,(255,0,0))#score(数字)を表示
+        scr.text_blit(text, 900,80)
+        for event in pg.event.get():
+            if event.type == pg.QUIT: return
+        
+        ball.ball_move(scr)
+        rack.update(scr)
+        mato.update(scr)
+        mato2.update(scr)
+        ball.update(scr)
+        pg.display.update()
+        clock.tick(1000)
+
+def check_bound(rct, scr_rct): #バーと壁の判定
+    yoko, tate = +1, +1 # 領域内
+    if rct.left < scr_rct.left or scr_rct.right  < rct.right : yoko = -1 # 領域外
+    if rct.top  < scr_rct.top  or scr_rct.bottom < rct.bottom: tate = -1 # 領域外
+    return yoko, tate
+
+if __name__ == "__main__": #関数の呼び出し
+    pg.init()
+    score = 0
     main()
+    pg.quit()
+    sys.exit()
